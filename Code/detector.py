@@ -29,7 +29,7 @@ model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 model.eval()
 
 #https://pytorch.org/vision/stable/generated/torchvision.models.detection.fasterrcnn_resnet50_fpn.html#torchvision.models.detection.fasterrcnn_resnet50_fpn
-def detect_objects(model, img_filename):
+def detect_objects(img_filename):
   img = Image.open(img_filename)
   img_np = np.asarray(img)
   img_t = torch.from_numpy(img_np)

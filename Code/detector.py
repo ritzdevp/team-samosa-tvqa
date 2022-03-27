@@ -6,9 +6,12 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import urllib.request
 import torch
+from torch.cuda import is_available
 import torchvision
 import matplotlib.patches as patches
 import cv2
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 COCO_INSTANCE_CATEGORY_NAMES = [
     '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus',
@@ -27,6 +30,7 @@ COCO_INSTANCE_CATEGORY_NAMES = [
 
 model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
 model.eval()
+model.to(device)
 
 #https://pytorch.org/vision/stable/generated/torchvision.models.detection.fasterrcnn_resnet50_fpn.html#torchvision.models.detection.fasterrcnn_resnet50_fpn
 def detect_objects(img_filename):
@@ -36,7 +40,12 @@ def detect_objects(img_filename):
   img_t_2 = torch.permute(img_t, (2, 0, 1))
   img_t_2 = img_t_2/255
   x = [img_t_2]
-  predictions = model(x)
+  predictions = None
+  if (torch.cuda.is_available()):
+    input = list(image.to(device) for image in x)
+    predictions = model(input)
+  else:
+    predictions = model(x)
   return predictions
 
 def make_bbox(img_filename, predictions):

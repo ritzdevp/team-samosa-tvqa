@@ -18,6 +18,7 @@ glove_dir = '/content/'
 
 embedding_index = {}
 
+#in TVQA they used 300d, but for computation, we are choosing 50d for now
 f = open(os.path.join(glove_dir,'glove.6B.50d.txt'))
 for line in f:
     values = line.split()

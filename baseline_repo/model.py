@@ -304,3 +304,78 @@ class TVQAMultiModalModel(torch.nn.Module):
 
 
     return logits
+
+  
+  
+class TVQAMMLinear(torch.nn.Module):
+
+  def __init__(self,
+               q_dim: int=768,
+               a_dim: int=768,
+               subt_dim: int=768,
+               vid_dim: int=2048,
+               num_ans: int=5,
+               att_dim: int=64,
+               ):
+    super(TVQAMMLinear, self).__init__()
+
+    hidden_proj_dim = 256
+
+    quest_proj = [nn.Linear(q_dim, hidden_proj_dim),
+                  nn.GELU()]
+
+    ans_proj = [nn.Linear(a_dim, hidden_proj_dim),
+                nn.GELU()]
+
+    subt_proj = [nn.Linear(subt_dim, hidden_proj_dim),
+                 nn.GELU()]
+
+    vid_proj = [nn.Linear(vid_dim, hidden_proj_dim),
+                nn.GELU()]
+
+    linear = [nn.Linear(hidden_proj_dim, att_dim*2),
+              nn.GELU(),
+              nn.Linear(att_dim*2, att_dim),
+              nn.GELU()]
+              
+    cls_layer = [nn.Linear(att_dim*2, att_dim),
+                 nn.GELU(),
+                 nn.Linear(att_dim, 1)]
+
+    self.quest_proj = nn.Sequential(*quest_proj)
+    self.ans_proj   = nn.Sequential(*ans_proj)
+    self.subt_proj  = nn.Sequential(*subt_proj)
+    self.vid_proj   = nn.Sequential(*vid_proj)
+
+    self.linear = nn.Sequential(*linear)
+    self.cls_layer = nn.Sequential(*cls_layer)
+
+
+  def forward(self, question, a1, a2, a3, a4, a5, subt, vid):
+
+    q_fwd = self.quest_proj(question)
+    subt_fwd = self.subt_proj(subt)
+    vid_fwd = self.vid_proj(vid)
+
+    ans_fwd = [self.ans_proj(ans) for ans in [a1, a2, a3, a4, a5]]
+    
+    q_a_s = [torch.cat((q_fwd, ans_i_fwd, subt_fwd), dim = 1)
+             for ans_i_fwd in ans_fwd]
+    q_a_v = [torch.cat((q_fwd, ans_i_fwd, vid_fwd), dim = 1)
+             for ans_i_fwd in ans_fwd] 
+
+    q_a_s_lin = [torch.max(self.linear(q_a_s_i), dim=1).values
+             for q_a_s_i in q_a_s]
+    q_a_v_lin = [torch.max(self.linear(q_a_v_i), dim=1).values
+             for q_a_v_i in q_a_v]
+
+    
+    score_one = self.cls_layer(torch.cat((q_a_s_lin[0], q_a_v_lin[0]), dim=1))
+    score_two = self.cls_layer(torch.cat((q_a_s_lin[1], q_a_v_lin[1]), dim=1))
+    score_three = self.cls_layer(torch.cat((q_a_s_lin[2], q_a_v_lin[2]), dim=1))
+    score_four = self.cls_layer(torch.cat((q_a_s_lin[3], q_a_v_lin[3]), dim=1))
+    score_five = self.cls_layer(torch.cat((q_a_s_lin[4], q_a_v_lin[4]), dim=1))
+
+    logits = torch.cat((score_one, score_two, score_three, score_four, score_five), dim=1)
+
+    return logits	  

@@ -6,10 +6,10 @@ from tqdm import tqdm
 import torch.optim as optim
 
 
-from CONSTANTS import BASE_PATH#, RESNET_FEATURES
+from CONSTANTS import BASE_PATH, RESNET_FEATURES
 from val import val_acc
 from bert import get_bert_embeddings
-# from resnet_extract import read_resnet_feats
+from resnet_extract import read_resnet_feats
 import wandb
 
 def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_loader, val_loader,
@@ -37,7 +37,7 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
 
     epoch = 0
     best_dev_acc = 0
-    while epoch < 10:
+    while epoch < 100:
 
         loss_epoch = 0
         num_correct = 0

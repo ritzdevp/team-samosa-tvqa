@@ -21,3 +21,4 @@ tar -xf ${BASE_PATH}/tvqa_plus/tvqa_plus_subtitles.tar.gz -C ${BASE_PATH}/tvqa_p
 
 pip install pysrt
 pip install transformers datasets
+pip install wandb

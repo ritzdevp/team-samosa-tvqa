@@ -10,7 +10,7 @@ from CONSTANTS import BASE_PATH, RESNET_FEATURES
 from val import val_acc
 from bert import get_bert_embeddings
 from resnet_extract import read_resnet_feats
-
+from glove_extractor import get_glove_embeddings
 
 def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_loader, val_loader,
           batch_size, batch_size_dev):
@@ -47,17 +47,27 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
         for batch_idx, (question, subt_text, a0, a1, a2, a3, a4, video_name, ans_ohe) in enumerate(train_loader):
             ans_ohe = ans_ohe.cuda()
 
-            quest_embed = get_bert_embeddings(texts=question)
-            subt_text_embed = get_bert_embeddings(texts=subt_text)
-            a0_embed = get_bert_embeddings(texts=a0)
-            a1_embed = get_bert_embeddings(texts=a1)
-            a2_embed = get_bert_embeddings(texts=a2)
-            a3_embed = get_bert_embeddings(texts=a3)
-            a4_embed = get_bert_embeddings(texts=a4)
+            ## For getting BERT embeddings
+            # quest_embed = get_bert_embeddings(texts=question)
+            # subt_text_embed = get_bert_embeddings(texts=subt_text)
+            # a0_embed = get_bert_embeddings(texts=a0)
+            # a1_embed = get_bert_embeddings(texts=a1)
+            # a2_embed = get_bert_embeddings(texts=a2)
+            # a3_embed = get_bert_embeddings(texts=a3)
+            # a4_embed = get_bert_embeddings(texts=a4)
 
-            video_resnet_feat = read_resnet_feats(video_name)
+            ##For getting GLOVE embeddings
+            quest_embed = get_glove_embeddings(texts=question)
+            subt_text_embed = get_glove_embeddings(texts=subt_text)
+            a0_embed = get_glove_embeddings(texts=a0)
+            a1_embed = get_glove_embeddings(texts=a1)
+            a2_embed = get_glove_embeddings(texts=a2)
+            a3_embed = get_glove_embeddings(texts=a3)
+            a4_embed = get_glove_embeddings(texts=a4)
 
-            # IF MODEL TAKES VIDEO AS INPUT
+            # video_resnet_feat = read_resnet_feats(video_name)
+
+            ## IF MODEL TAKES Q,A,S,V AS INPUT
             # logits = tvqa_model.forward(question=quest_embed, 
             #                             a1=a0_embed, 
             #                             a2=a1_embed, 
@@ -66,7 +76,8 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
             #                             a5=a4_embed,
             #                             subt=subt_text_embed,
             #                             vid=video_resnet_feat)
-
+            
+            ## IF MODEL TAKES ONLY Q,A,S AS INPUT
             logits = tvqa_model.forward(question=quest_embed, 
                                         a1=a0_embed, 
                                         a2=a1_embed, 
@@ -75,7 +86,7 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
                                         a5=a4_embed,
                                         subt=subt_text_embed)
             
-
+            
             loss = criterion(logits, ans_ohe)
             num_correct += int((torch.argmax(logits, axis=1) == ans_ohe).sum())
 

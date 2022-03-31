@@ -3,20 +3,28 @@ import torch
 import torch.nn as nn
 from bert import get_bert_embeddings
 from resnet_extract import read_resnet_feats
-
+from glove_extractor import get_glove_embeddings
 
 def val_acc(model, dev_loader, batch_size_dev):
   model.eval()
   num_correct = 0
   for batch_idx, (question, subt_text, a0, a1, a2, a3, a4, video_name, ans_ohe) in enumerate(dev_loader):
     ans_ohe = ans_ohe.cuda()
-    quest_embed = get_bert_embeddings(texts=question)
-    subt_text_embed = get_bert_embeddings(texts=subt_text)
-    a0_embed = get_bert_embeddings(texts=a0)
-    a1_embed = get_bert_embeddings(texts=a1)
-    a2_embed = get_bert_embeddings(texts=a2)
-    a3_embed = get_bert_embeddings(texts=a3)
-    a4_embed = get_bert_embeddings(texts=a4)
+    # quest_embed = get_bert_embeddings(texts=question)
+    # subt_text_embed = get_bert_embeddings(texts=subt_text)
+    # a0_embed = get_bert_embeddings(texts=a0)
+    # a1_embed = get_bert_embeddings(texts=a1)
+    # a2_embed = get_bert_embeddings(texts=a2)
+    # a3_embed = get_bert_embeddings(texts=a3)
+    # a4_embed = get_bert_embeddings(texts=a4)
+
+    quest_embed = get_glove_embeddings(texts=question)
+    subt_text_embed = get_glove_embeddings(texts=subt_text)
+    a0_embed = get_glove_embeddings(texts=a0)
+    a1_embed = get_glove_embeddings(texts=a1)
+    a2_embed = get_glove_embeddings(texts=a2)
+    a3_embed = get_glove_embeddings(texts=a3)
+    a4_embed = get_glove_embeddings(texts=a4)
 
     with torch.no_grad():
       # # IF MODEL does not TAKES VIDEO INPUT

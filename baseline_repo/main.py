@@ -16,10 +16,10 @@ if __name__ == "__main__":
     batch_size=16
     batch_size_dev=4
 
-    train_dataset = TVQA(dataset="train")
+    train_dataset = TVQAPlus(dataset="train")
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-    val_dataset = TVQA(dataset="val")
+    val_dataset = TVQAPlus(dataset="val")
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size_dev, shuffle=False)
 
 

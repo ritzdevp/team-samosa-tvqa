@@ -23,7 +23,7 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
     }
 
     wandb.init(project="multi_modal_exp", entity="mmml", name="Bert_Subtitle_Unimodal", config=wandb_config)
-   wandb.watch(tvqa_model, log="all")
+    wandb.watch(tvqa_model, log="all")
     
     tvqa_model.cuda()
 

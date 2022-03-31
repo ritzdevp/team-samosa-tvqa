@@ -22,8 +22,8 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
       "batch_size": batch_size,
     }
 
-    wandb.init(project="mmml", entity="wallace_dalmet", name="Sub_Bert_Uni", config=wandb_config)
-    wandb.watch(tvqa_model, log="all")
+    wandb.init(project="multi_modal_exp", entity="mmml", name="Bert_Subtitle_Unimodal", config=wandb_config)
+   wandb.watch(tvqa_model, log="all")
     
     tvqa_model.cuda()
 

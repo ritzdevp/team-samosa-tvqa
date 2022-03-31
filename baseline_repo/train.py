@@ -44,11 +44,13 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             epoch = checkpoint['epoch'] + 1
             
-        for batch_idx, (question, subt_text, a0, a1, a2, a3, a4, video_name, ans_ohe) in enumerate(train_loader):
+        for batch_idx, batch in enumerate(train_loader):
+            # print("BATCH", batch)
+            question, a0, a1, a2, a3, a4, video_name, ans_ohe = batch
             ans_ohe = ans_ohe.cuda()
 
             quest_embed = get_bert_embeddings(texts=question)
-            subt_text_embed = get_bert_embeddings(texts=subt_text)
+            # subt_text_embed = get_bert_embeddings(texts=subt_text)
             a0_embed = get_bert_embeddings(texts=a0)
             a1_embed = get_bert_embeddings(texts=a1)
             a2_embed = get_bert_embeddings(texts=a2)
@@ -67,14 +69,23 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
             #                             subt=subt_text_embed,
             #                             vid=video_resnet_feat)
 
+            # logits = tvqa_model.forward(question=quest_embed, 
+            #                             a1=a0_embed, 
+            #                             a2=a1_embed, 
+            #                             a3=a2_embed,
+            #                             a4=a3_embed, 
+            #                             a5=a4_embed,
+            #                             subt=subt_text_embed)
+
             logits = tvqa_model.forward(question=quest_embed, 
                                         a1=a0_embed, 
                                         a2=a1_embed, 
                                         a3=a2_embed,
                                         a4=a3_embed, 
                                         a5=a4_embed,
-                                        subt=subt_text_embed)
-            
+                                        vid=video_resnet_feat)
+
+
 
             loss = criterion(logits, ans_ohe)
             num_correct += int((torch.argmax(logits, axis=1) == ans_ohe).sum())

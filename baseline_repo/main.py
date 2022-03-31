@@ -4,22 +4,24 @@ from torch.nn.utils.rnn import pad_sequence
 import torch.optim as optim
 from data_sets import TVQA, TVQAPlus
 
-from model import TVQAQAModel
+# from model import TVQAQAModel
+from model import TVQAQAModelVideo
 
 from train import train
 
 if __name__ == "__main__":
 
-    tvqa_model = TVQAQAModel()
+    # tvqa_model = TVQAQAModel()
+    tvqa_model = TVQAQAModelVideo()
 
     
     batch_size=16
     batch_size_dev=4
 
-    train_dataset = TVQA(dataset="train")
+    train_dataset = TVQAPlus(dataset="train")
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-    val_dataset = TVQA(dataset="val")
+    val_dataset = TVQAPlus(dataset="val")
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=batch_size_dev, shuffle=False)
 
 
@@ -27,5 +29,6 @@ if __name__ == "__main__":
     criterion = torch.nn.CrossEntropyLoss()
     scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
 
-    model_version = "tvqa_subt_v1.pt"
+    # model_version = "tvqa_subt_v1.pt"
+    model_version = "tvqa_vid_v1.pt"
     train(tvqa_model, optimizer, criterion, scheduler, model_version, train_loader, val_loader, batch_size, batch_size_dev)

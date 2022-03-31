@@ -127,8 +127,9 @@ class TVQAPlus(torch.utils.data.Dataset):
       answer_idx = int(self.target_dict[i]['answer_idx'])
       
       video_name = self.target_dict[i]['vid_name']
-      subtitle = self.subtitles_dict[video_name]
-      subt_text = subtitle['sub_text']
-      subt_text = subt_text.replace('<eos>', '[SEP]')
+      # subtitle = self.subtitles_dict[video_name]
+      # subt_text = subtitle['sub_text']
+      # subt_text = subt_text.replace('<eos>', '[SEP]')
 
-      return question, subt_text, a0, a1, a2, a3, a4, video_name, answer_idx
+      # return question, subt_text, a0, a1, a2, a3, a4, video_name, answer_idx
+      return question, a0, a1, a2, a3, a4, video_name, answer_idx

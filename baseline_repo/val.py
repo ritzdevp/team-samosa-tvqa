@@ -19,7 +19,7 @@ def val_acc(model, dev_loader, batch_size_dev):
     a3_embed = get_bert_embeddings(texts=a3)
     a4_embed = get_bert_embeddings(texts=a4)
 
-    with torch.no_grad():
+    # with torch.no_grad():
       # # IF MODEL does not TAKES VIDEO INPUT
 
       # logits = model.forward(question=quest_embed, 

@@ -10,11 +10,21 @@ from CONSTANTS import BASE_PATH, RESNET_FEATURES
 from val import val_acc
 from bert import get_bert_embeddings
 from resnet_extract import read_resnet_feats
-
+import wandb
 
 def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_loader, val_loader,
           batch_size, batch_size_dev):
 
+    wandb_config = {
+      "model_type": "Bert_Sub_uni",
+      "learning_rate": 3e-3,
+      "epochs": 10,
+      "batch_size": batch_size,
+    }
+
+    wandb.init(project="mmml", entity="wallace_dalmet", name="Sub_Bert_Uni", config=wandb_config)
+    wandb.watch(tvqa_model, log="all")
+    
     tvqa_model.cuda()
 
     if not os.path.exists(f'{BASE_PATH}/MultiModalExp/'):
@@ -55,7 +65,7 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
             a3_embed = get_bert_embeddings(texts=a3)
             a4_embed = get_bert_embeddings(texts=a4)
 
-            video_resnet_feat = read_resnet_feats(video_name)
+            # video_resnet_feat = read_resnet_feats(video_name)
 
             # IF MODEL TAKES VIDEO AS INPUT
             # logits = tvqa_model.forward(question=quest_embed, 
@@ -103,6 +113,12 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
         train_acc = 100 * num_correct / (len(train_loader) * batch_size)
         dev_acc = val_acc(tvqa_model, val_loader, batch_size_dev)
 
+
+        wandb.log({"loss": float(loss), 'lr': float(optimizer.param_groups[0]['lr']),
+               'train_acc': train_acc,
+               'val_acc': dev_acc,
+               'epoch': epoch})
+
         if dev_acc > best_dev_acc:
             best_dev_acc = dev_acc
             torch.save({
@@ -118,3 +134,4 @@ def train(tvqa_model, optimizer, criterion, scheduler, model_version, train_load
         epoch += 1
 
         scheduler.step()
+    wandb.finish()

@@ -401,7 +401,7 @@ class TVQAQAModelVideo(torch.nn.Module):
     ans_proj = [nn.Linear(a_dim, hidden_proj_dim),
                 nn.GELU()]
 	
-	vid_proj = [nn.Linear(vid_dim, hidden_proj_dim),
+    vid_proj = [nn.Linear(vid_dim, hidden_proj_dim),
                 nn.GELU()]
 
     cls_layer = [nn.Linear(att_dim, 1)]

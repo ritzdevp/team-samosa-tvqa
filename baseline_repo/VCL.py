@@ -15,7 +15,7 @@ exceptlist = ["what", "who", "whom", "how", "where", "why"]
 for w in exceptlist:
   stopwordslist.remove(w)
 
-vis_concepts = pickle.load(open('det_visual_concepts_hq.pickle', 'rb'))
+vis_concepts = pickle.load(open('/content/det_visual_concepts_hq.pickle', 'rb'))
 
 embedding_index = {}
 f = open('/content/glove.6B.50d.txt')
@@ -31,6 +31,7 @@ def get_detected_objects(episode, index):
   y = []
   for w in x:
     y.append(w.strip())
+
   return y
 
 def phrase_splitter(arr):
@@ -73,6 +74,9 @@ def relevance_score(episode, frame_index, question):
   det_objs_embedding_matrix = get_glove_wordlist_embedding(detected_objects_list) #num_det x 50
   question_embedding_matrix = get_glove_wordlist_embedding(tokenize_question(question)) #num_q x 50
 
+  if (len(detected_objects_list) == 0):
+    return np.zeros(10), 0
+
   score_matrix = det_objs_embedding_matrix.dot(question_embedding_matrix.T)  #num_det x num_q
   score = np.sum(score_matrix)
 
@@ -87,7 +91,7 @@ def get_maxsum_subarray(myarr, window_size):
   ws = window_size
   maxsum = 0
   maxindexend = -1
-  for i in range(len(myarr)-ws):
+  for i in range(len(myarr) - ws):
     sum += myarr[i]
     currlen += 1
     if (currlen > ws):

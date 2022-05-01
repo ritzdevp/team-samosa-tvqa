@@ -87,7 +87,7 @@ def get_maxsum_subarray(myarr, window_size):
   ws = window_size
   maxsum = 0
   maxindexend = -1
-  for i in range(len(myarr)):
+  for i in range(len(myarr)-ws):
     sum += myarr[i]
     currlen += 1
     if (currlen > ws):

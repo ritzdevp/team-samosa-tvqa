@@ -1,6 +1,6 @@
 # """### **Dataset Download** """
 
-BASE_PATH=/content/drive/MyDrive/MMML
+BASE_PATH=/content
 
 wget https://tvqa.cs.unc.edu/files/tvqa_qa_release.tar.gz -P ${BASE_PATH}
 

@@ -1,4 +1,14 @@
 VCL first run
+        self.proj = torch.nn.Sequential(torch.nn.Linear(768, 256),
+                                        torch.nn.GELU(),
+                                        torch.nn.Linear(256, 64),
+                                        torch.nn.GELU(),
+                                        torch.nn.Linear(64, 1)).to("cuda")
+                                        
+VCL_window_size = 10
+No batch norm no dropout
+
+
 
 Epoch 0 Loss 1400.7105057239532 train_acc 40.21978954514596, devacc 51.02513227513227
 Epoch 1 Loss 2751.324017882347 train_acc 43.38934147997284, devacc 50.69444444444444
